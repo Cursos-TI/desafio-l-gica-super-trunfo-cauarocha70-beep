@@ -1,0 +1,248 @@
+#include <stdio.h>
+#include <string.h>
+
+#define TOTAL_ATRIBUTOS 5
+#define DENSIDADE 5
+
+typedef struct {
+    char nome[50];
+    char codigo[5];
+    unsigned long int populacao;
+    float area;
+    float pib;
+    int pontosTuristicos;
+    float densidade;
+} Carta;
+
+const char *atributos[] = {
+    "",
+    "Populacao (habitantes)",
+    "Area (km2)",
+    "PIB (bilhoes de USD)",
+    "Pontos Turisticos",
+    "Densidade Demografica (hab/km2)"
+};
+
+void limparBuffer(void);
+void cadastrarCartas(Carta *c1, Carta *c2);
+void exibirCarta(Carta c);
+void exibirMenuAtributos(int bloqueado);
+int lerAtributo(int bloqueado);
+double valorDoAtributo(Carta c, int atributo);
+int compararAtributo(double v1, double v2, int atributo);
+void jogarRodada(Carta c1, Carta c2);
+
+int main(void) {
+    Carta carta1, carta2;
+    int opcao;
+    int rodando = 1;
+
+    cadastrarCartas(&carta1, &carta2);
+
+    printf("\n===========================================\n");
+    printf("      SUPER TRUNFO - NIVEL MESTRE\n");
+    printf("===========================================\n");
+
+    while (rodando) {
+        printf("\n-------------------------------------------\n");
+        printf("MENU PRINCIPAL\n");
+        printf("1 - Comparar cartas\n");
+        printf("2 - Ver os dados das cartas\n");
+        printf("0 - Sair\n");
+        printf("Escolha uma opcao: ");
+
+        if (scanf("%d", &opcao) != 1) {
+            limparBuffer();
+            printf("\nEntrada invalida! Digite apenas numeros.\n");
+            continue;
+        }
+        limparBuffer();
+
+        switch (opcao) {
+            case 1:
+                jogarRodada(carta1, carta2);
+                break;
+            case 2:
+                printf("\n--- CARTAS EM JOGO ---\n");
+                exibirCarta(carta1);
+                exibirCarta(carta2);
+                break;
+            case 0:
+                printf("\nEncerrando o jogo. Ate a proxima!\n");
+                rodando = 0;
+                break;
+            default:
+                printf("\nOpcao invalida! Escolha 0, 1 ou 2.\n");
+                break;
+        }
+    }
+
+    return 0;
+}
+
+/* Sem isso, uma entrada errada fica presa e o programa trava em loop */
+void limparBuffer(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void cadastrarCartas(Carta *c1, Carta *c2) {
+    strcpy(c1->nome, "Brasil");
+    strcpy(c1->codigo, "A01");
+    c1->populacao = 203080000;
+    c1->area = 8515767.0f;
+    c1->pib = 2170.0f;
+    c1->pontosTuristicos = 45;
+
+    strcpy(c2->nome, "Japao");
+    strcpy(c2->codigo, "B02");
+    c2->populacao = 124520000;
+    c2->area = 377975.0f;
+    c2->pib = 4210.0f;
+    c2->pontosTuristicos = 60;
+
+    c1->densidade = (float) c1->populacao / c1->area;
+    c2->densidade = (float) c2->populacao / c2->area;
+}
+
+void exibirCarta(Carta c) {
+    printf("\n[%s] %s\n", c.codigo, c.nome);
+    printf("  Populacao..............: %lu habitantes\n", c.populacao);
+    printf("  Area...................: %.2f km2\n", c.area);
+    printf("  PIB....................: %.2f bilhoes USD\n", c.pib);
+    printf("  Pontos Turisticos......: %d\n", c.pontosTuristicos);
+    printf("  Densidade Demografica..: %.2f hab/km2\n", c.densidade);
+}
+
+/* Passe 0 para mostrar a lista inteira, ou o atributo que ja foi escolhido */
+void exibirMenuAtributos(int bloqueado) {
+    int i;
+    for (i = 1; i <= TOTAL_ATRIBUTOS; i++) {
+        if (i != bloqueado) {
+            printf("  %d - %s", i, atributos[i]);
+            if (i == DENSIDADE) {
+                printf("  (vence o MENOR valor)");
+            }
+            printf("\n");
+        }
+    }
+    printf("Escolha o atributo: ");
+}
+
+int lerAtributo(int bloqueado) {
+    int opcao;
+    int valida = 0;
+
+    do {
+        exibirMenuAtributos(bloqueado);
+
+        if (scanf("%d", &opcao) != 1) {
+            limparBuffer();
+            printf("\nEntrada invalida! Digite um numero.\n");
+            continue;
+        }
+        limparBuffer();
+
+        switch (opcao) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                /* Trava caso o jogador digite o numero que sumiu do menu */
+                if (opcao == bloqueado) {
+                    printf("\nEsse atributo ja foi escolhido! Escolha outro.\n");
+                } else {
+                    valida = 1;
+                }
+                break;
+            default:
+                printf("\nOpcao invalida! Escolha um numero da lista.\n");
+                break;
+        }
+    } while (!valida);
+
+    return opcao;
+}
+
+double valorDoAtributo(Carta c, int atributo) {
+    switch (atributo) {
+        case 1:  return (double) c.populacao;
+        case 2:  return c.area;
+        case 3:  return c.pib;
+        case 4:  return (double) c.pontosTuristicos;
+        case 5:  return c.densidade;
+        default: return 0.0;
+    }
+}
+
+/* Devolve 1 se a carta 1 vence, 2 se a carta 2 vence, 0 se empatou */
+int compararAtributo(double v1, double v2, int atributo) {
+    if (v1 == v2) {
+        return 0;
+    }
+
+    if (atributo == DENSIDADE) {
+        return (v1 < v2) ? 1 : 2;
+    } else {
+        return (v1 > v2) ? 1 : 2;
+    }
+}
+
+void jogarRodada(Carta c1, Carta c2) {
+    int atrib1, atrib2;
+    double a1c1, a1c2, a2c1, a2c2;
+    double soma1, soma2;
+    int venc1, venc2;
+
+    printf("\n=== ESCOLHA O PRIMEIRO ATRIBUTO ===\n");
+    atrib1 = lerAtributo(0);
+
+    printf("\n=== ESCOLHA O SEGUNDO ATRIBUTO ===\n");
+    printf("(o atributo \"%s\" saiu da lista)\n", atributos[atrib1]);
+    atrib2 = lerAtributo(atrib1);
+
+    a1c1 = valorDoAtributo(c1, atrib1);
+    a1c2 = valorDoAtributo(c2, atrib1);
+    a2c1 = valorDoAtributo(c1, atrib2);
+    a2c2 = valorDoAtributo(c2, atrib2);
+
+    venc1 = compararAtributo(a1c1, a1c2, atrib1);
+    venc2 = compararAtributo(a2c1, a2c2, atrib2);
+
+    soma1 = a1c1 + a2c1;
+    soma2 = a1c2 + a2c2;
+
+    printf("\n===========================================\n");
+    printf("           RESULTADO DA RODADA\n");
+    printf("===========================================\n");
+    printf("Carta 1: %s\n", c1.nome);
+    printf("Carta 2: %s\n", c2.nome);
+
+    printf("\n--- Atributo 1: %s ---\n", atributos[atrib1]);
+    printf("  %-12s: %.2f\n", c1.nome, a1c1);
+    printf("  %-12s: %.2f\n", c2.nome, a1c2);
+    printf("  Vencedor    : %s\n",
+           (venc1 == 0) ? "Empate" : (venc1 == 1) ? c1.nome : c2.nome);
+
+    printf("\n--- Atributo 2: %s ---\n", atributos[atrib2]);
+    printf("  %-12s: %.2f\n", c1.nome, a2c1);
+    printf("  %-12s: %.2f\n", c2.nome, a2c2);
+    printf("  Vencedor    : %s\n",
+           (venc2 == 0) ? "Empate" : (venc2 == 1) ? c1.nome : c2.nome);
+
+    printf("\n--- SOMA DOS DOIS ATRIBUTOS ---\n");
+    printf("  %-12s: %.2f\n", c1.nome, soma1);
+    printf("  %-12s: %.2f\n", c2.nome, soma2);
+
+    /* Na soma vale sempre a maior, mesmo quando um dos atributos e a densidade */
+    printf("\n>>> ");
+    if (soma1 == soma2) {
+        printf("Empate!\n");
+    } else if (soma1 > soma2) {
+        printf("A carta %s venceu a rodada!\n", c1.nome);
+    } else {
+        printf("A carta %s venceu a rodada!\n", c2.nome);
+    }
+    printf("===========================================\n");
+}
