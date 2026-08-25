@@ -1,0 +1,49 @@
+#include <stdio.h>
+
+// carta do super trunfo, guarda tudo que precisamos de uma cidade
+typedef struct {
+    char estado[3];
+    char codigo[5];
+    char cidade[50];
+    int populacao;
+    float area;
+    float pib;
+    int pontosTuristicos;
+} Carta;
+
+int main() {
+    // as duas cartas que vamos comparar, já com os dados preenchidos
+    Carta carta1 = {"SP", "SP01", "Sao Paulo", 12300000, 1521.11, 699000000.0, 120};
+    Carta carta2 = {"RJ", "RJ01", "Rio de Janeiro", 6000000, 1200.27, 364000000.0, 95};
+
+    // densidade = quanta gente por km2, PIB per capita = quanto gera por pessoa
+    float densidade1 = carta1.populacao / carta1.area;
+    float densidade2 = carta2.populacao / carta2.area;
+    float pibPerCapita1 = carta1.pib / carta1.populacao;
+    float pibPerCapita2 = carta2.pib / carta2.populacao;
+
+    // mostra os dados calculados de cada carta
+    printf("Carta 1 - %s (%s)\n", carta1.cidade, carta1.estado);
+    printf("Densidade populacional: %.2f hab/km2\n", densidade1);
+    printf("PIB per capita: %.2f\n\n", pibPerCapita1);
+
+    printf("Carta 2 - %s (%s)\n", carta2.cidade, carta2.estado);
+    printf("Densidade populacional: %.2f hab/km2\n", densidade2);
+    printf("PIB per capita: %.2f\n\n", pibPerCapita2);
+
+    // atributo escolhido pra disputa: população (dá pra trocar aqui depois)
+    printf("Comparacao de cartas (Atributo: Populacao)\n");
+    printf("Carta 1 - %s (%s): %d\n", carta1.cidade, carta1.estado, carta1.populacao);
+    printf("Carta 2 - %s (%s): %d\n", carta2.cidade, carta2.estado, carta2.populacao);
+
+    // quem tem mais gente ganha a rodada
+    if (carta1.populacao > carta2.populacao) {
+        printf("Resultado: Carta 1 (%s) venceu!\n", carta1.cidade);
+    } else if (carta1.populacao < carta2.populacao) {
+        printf("Resultado: Carta 2 (%s) venceu!\n", carta2.cidade);
+    } else {
+        printf("Resultado: Empate!\n");
+    }
+
+    return 0;
+}
