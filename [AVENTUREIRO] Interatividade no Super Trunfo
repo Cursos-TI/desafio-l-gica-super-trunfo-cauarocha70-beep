@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Pais {
+    char nome[50];
+    int populacao;
+    float area;
+    float pib;
+    int pontosTuristicos;
+    float densidadeDemografica;
+};
+
+int main() {
+    struct Pais pais1 = {"Brasil", 213000000, 8515767.0, 1920000000.0, 20};
+    struct Pais pais2 = {"Argentina", 45000000, 2780400.0, 487000000.0, 15};
+
+    pais1.densidadeDemografica = pais1.populacao / pais1.area;
+    pais2.densidadeDemografica = pais2.populacao / pais2.area;
+
+    int opcao;
+
+    printf("Escolha o atributo para comparar:\n");
+    printf("1. Populacao\n");
+    printf("2. Area\n");
+    printf("3. PIB\n");
+    printf("4. Pontos turisticos\n");
+    printf("5. Densidade demografica\n");
+    printf("Opcao: ");
+    scanf("%d", &opcao);
+
+    float valor1, valor2;
+    char atributo[30];
+
+    switch (opcao) {
+        case 1:
+            valor1 = pais1.populacao;
+            valor2 = pais2.populacao;
+            strcpy(atributo, "Populacao");
+            break;
+        case 2:
+            valor1 = pais1.area;
+            valor2 = pais2.area;
+            strcpy(atributo, "Area");
+            break;
+        case 3:
+            valor1 = pais1.pib;
+            valor2 = pais2.pib;
+            strcpy(atributo, "PIB");
+            break;
+        case 4:
+            valor1 = pais1.pontosTuristicos;
+            valor2 = pais2.pontosTuristicos;
+            strcpy(atributo, "Pontos turisticos");
+            break;
+        case 5:
+            valor1 = pais1.densidadeDemografica;
+            valor2 = pais2.densidadeDemografica;
+            strcpy(atributo, "Densidade demografica");
+            break;
+        default:
+            printf("Opcao invalida\n");
+            return 1;
+    }
+
+    printf("\n%s: %.2f\n", pais1.nome, valor1);
+    printf("%s: %.2f\n", pais2.nome, valor2);
+    printf("Atributo comparado: %s\n\n", atributo);
+
+    if (opcao == 5) {
+        if (valor1 < valor2) {
+            printf("%s venceu!\n", pais1.nome);
+        } else if (valor2 < valor1) {
+            printf("%s venceu!\n", pais2.nome);
+        } else {
+            printf("Empate!\n");
+        }
+    } else {
+        if (valor1 > valor2) {
+            printf("%s venceu!\n", pais1.nome);
+        } else if (valor2 > valor1) {
+            printf("%s venceu!\n", pais2.nome);
+        } else {
+            printf("Empate!\n");
+        }
+    }
+
+    return 0;
+}
